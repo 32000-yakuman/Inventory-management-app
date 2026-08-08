@@ -1,0 +1,59 @@
+services:
+
+  app-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: hihuclub
+      MYSQL_DATABASE: app_db
+    command: --ssl=0 --require_secure_transport=OFF
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app
+      - node_modules_volume:/app/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: .devcontainer/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      app-db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    environment:
+      MYSQL_ROOT_PASSWORD: hihuclub
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings.development}
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+
+volumes:
+  db_data:
+  node_modules_volume:
