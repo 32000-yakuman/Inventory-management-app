@@ -42,8 +42,9 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      MYSQL_ROOT_PASSWORD: hihuclub
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings.development}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   nginx:
     image: nginx:alpine
     ports:
