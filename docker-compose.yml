@@ -5,7 +5,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: app_db
-      MYSWQL_USER: app_user
+      MYSQL_USER: app_user
       MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD}
     command: --ssl=0 --require_secure_transport=OFF
     ports:
