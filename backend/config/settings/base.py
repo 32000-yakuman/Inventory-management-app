@@ -83,8 +83,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get("MYSQL_DATABASE", "app_db"),
+        "USER": os.environ.get("MYSQL_USER", "root"),
+        "PASSWORD": os.environ.get("MYSQL_PASSWORD", "hihuclub"),
+        "HOST": "app-db",
+        "PORT": "3306",
+        "OPTIONS": {
+            "connect_timeout": 10,
+            "ssl": {"ssl-mode": "DISABLED"},
+        },
     }
 }
 

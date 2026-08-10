@@ -4,20 +4,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "app_db",
-        "USER": "root",
-        "PASSWORD": "hihuclub",
-        "HOST": "app-db",
-        "PORT": "3306",
-        "OPTIONS": {
-            "connect_timeout": 10,
-            "ssl": {"ssl-mode": "DISABLED"},
-        },
-    }
-}
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
