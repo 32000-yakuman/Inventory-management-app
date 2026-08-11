@@ -19,8 +19,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework.permissions import IsAuthenticated
 import pandas
-import traceback
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ProductView(APIView):
 
@@ -233,29 +234,28 @@ class SalesAsyncView(APIView):
 
 class SalesSyncView(APIView):
     def post(self, request, format=None):
-        print("File", request.FILES)
-        print("Data", request.data)
+        logger.info("File: %s", request.FILES)
+        logger.info("Data: %s", request.data)
         try:
             serializer = FileSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
             file = serializer.validated_data['file']
             filename = default_storage.save(file.name, file)
-            print("=== SAVED FILE PATH ===", default_storage.path(filename))
-            
+            logger.info("Saved file path: %s", default_storage.path(filename))
+
             sales_file = SalesFile.objects.create(
                 file_name=filename,
                 status=Status.ASYNC_UNPROCESSED
             )
-            print("=== SALES_FILE CREATED ===", sales_file.id)
-            
+            logger.info("SalesFile created: id=%s", sales_file.id)
+
             df = pandas.read_csv(default_storage.path(filename))
-            print("=== CSV HEAD ===")
-            print(df.head())
-            print("=== CSV COLUMNS ===", df.columns)
+            logger.debug("CSV columns: %s", df.columns)
+            logger.debug("CSV head:\n%s", df.head())
             
             for idx, row in df.iterrows():
-                print(f"--- ROW {idx} ---", row)
+                logger.debug("Row %s: %s", idx, row)
 
                 try:
                     Sales.objects.create(
@@ -264,21 +264,19 @@ class SalesSyncView(APIView):
                         quantity=row['quantity'],
                         import_file=sales_file
                     )
-                    print(f"ROW {idx} SAVED")
+                    logger.debug("Row %s saved", idx)
                 except Exception as e:
-                    print(f"SALES ERROR at row {idx}:", e)
-                    traceback.print_exc()
-                    raise  # ★ これで例外を握りつぶさない
+                    logger.exception("Sales error at row %s", idx)
+                    raise  # 例外を握りつぶさない
 
             sales_file.status = Status.SYNC
             sales_file.save()
-            print("=== SALES_FILE UPDATED TO SYNC ===")
+            logger.info("SalesFile updated to SYNC: id=%s", sales_file.id)
 
             return Response(status=201)
 
         except Exception as e:
-            print("ERROR:", e)
-            traceback.print_exc()
+            logger.exception("SalesSyncView failed")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
 class SalesList(ListAPIView):
