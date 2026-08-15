@@ -41,6 +41,7 @@ axios_instance.interceptors.response.use(
             "/api/inventory/login/",
             "/api/inventory/logout/",
             "/api/inventory/retry/",
+            "/api/inventory/me/",
         ]
 
         if (excludedUrls.includes(originalRequest.url)) {

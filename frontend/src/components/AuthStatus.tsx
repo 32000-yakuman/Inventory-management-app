@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "../../plugins/axios"; // あなたの axios_instance
+import axios from "../../plugins/axios";
 
 export default function AuthStatus() {
   const [status, setStatus] = useState("判定中…");
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/inventory/me/", {withCredentials: true})
+      .get("/api/inventory/me/")
       .then(() => setStatus("ログイン中"))
       .catch(() => setStatus("ログアウト"));
   }, []);
