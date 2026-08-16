@@ -73,3 +73,5 @@ staticfiles/
 nginx/certs/
 *.key
 *.crt
+
+docker-compose.override.yml
