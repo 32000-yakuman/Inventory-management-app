@@ -55,9 +55,8 @@ axios_instance.interceptors.response.use(
                 {}
             )
 
-            // 古いリクエストは再送しない
-            // Refresh後はフロント側から改めてAPIを呼び出す
-            return Promise.reject(error)
+            // リフレッシュ成功後、リクエストを再送
+            return axios_instance(originalRequest)
 
         } catch (refreshError) {
             // Refreshにも失敗した場合はログイン画面へ
