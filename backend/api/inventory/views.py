@@ -76,13 +76,6 @@ class ProductView(APIView):
         product.delete()
         return Response(status = status.HTTP_200_OK)
 
-class ProductModelViewSet(ModelViewSet):
-    """
-    商品操作に関する関数（ModelViewSet）
-    """
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
 class PurchaseView(APIView):
     def post(self, request, format=None):
         """
