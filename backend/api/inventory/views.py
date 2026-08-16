@@ -129,7 +129,14 @@ class LoginView(APIView):
 
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception:
+            return Response(
+                {"errMsg": "ユーザ名またはパスワードが正しくありません"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        
         access = serializer.validated_data.get("access", None)
         refresh = serializer.validated_data.get("refresh", None)
         if access:
@@ -153,7 +160,10 @@ class LoginView(APIView):
                 samesite=settings.JWT_COOKIE_SAMESITE
             )
             return response
-        return Response({'errMsg': 'ユーザーの認証に失敗しました'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            {'errMsg': 'ユーザーの認証に失敗しました'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
 class RetryView(APIView):
     authentication_classes = []
