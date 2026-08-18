@@ -6,15 +6,12 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.db.models import F, Value, Sum
 from django.db.models.functions import Coalesce, TruncMonth
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Product, Purchase, Sales
 from rest_framework import status
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework.permissions import IsAuthenticated
 import pandas
