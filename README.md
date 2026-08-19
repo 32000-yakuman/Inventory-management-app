@@ -53,5 +53,6 @@ docker compose exec backend python manage.py test
 - Git
 
 ## 注意点
-django側のルーティングではパスの末尾に/をつけること
+djangoのルーティング規約に合わせてパスの末尾に/をつけること（フロント側も）
 ex.) path("admin/", admin.site.urls)
+　　  axios.get("/api/inventory/me/")

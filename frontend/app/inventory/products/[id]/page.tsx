@@ -122,11 +122,11 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         // actionによってHTTPメソッドと使用するパラメーターを切り替える
         if (action === "purchase") {
             handlePurchase(data);
-        } else if (action === "sell") {
+        } else if (action === "sale") {
             if (data.id === null) {
                 return;
             }
-        handleSell(data);
+        handleSale(data);
         }
     };
 
@@ -137,18 +137,18 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             purchase_date: new Date(),
             product: data.id
         }
-        axios.post('/api/inventory/purchase', data).then((response) => {
+        axios.post('/api/inventory/purchases/', purchase).then((response) => {
             result('success', '商品を仕入れました')
         })  
     };
 
-    const handleSell = (data: FormData) => {
-        const sales = {
+    const handleSale = (data: FormData) => {
+        const sale = {
             quantity: data.quantity,
             sales_date: new Date(),
             product: data.id
         }
-        axios.post('/api/inventory/sales', data).then((response) => {
+        axios.post('/api/inventory/sales/', sale).then((response) => {
             result('success', '商品を卸しました')
         })
     };
@@ -202,7 +202,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 <Button
                     variant="contained"
                     type="submit"
-                    onClick={() => setAction("sell")}
+                    onClick={() => setAction("sale")}
                 >
                     商品を卸す
                 </Button>

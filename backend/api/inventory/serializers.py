@@ -11,7 +11,12 @@ class PurchaseSerializer(serializers.ModelSerializer):
         model = Purchase
         fields = '__all__'
 
-class SaleSerializer(serializers.ModelSerializer):
+class SalesCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sales
+        fields =  ['product', 'quantity', 'sales_date', 'import_file']
+
+class SalesSerializer(serializers.ModelSerializer):
     monthly_date = serializers.DateTimeField(format='%Y-%m')
     monthly_price = serializers.IntegerField()
     class Meta:
