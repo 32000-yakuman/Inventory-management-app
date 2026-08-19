@@ -7,8 +7,9 @@ import {
     AlertColor,
     Box,
     Button,
-    IconButton,
+    MenuItem,
     Paper,
+    Select,
     Snackbar,
     Table,
     TableBody,
@@ -16,7 +17,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Typography,
 } from '@mui/material';
 import { MuiFileInput } from 'mui-file-input';
@@ -64,13 +64,34 @@ export default function Page() {
     }
 
     /* 売上数の取得 */
-    const [data, setData] = useState([])
+    const [data, setData] = useState<any[]>([])
+    const [products, setProducts] = useState<any[]>([])
+    const [selectedProduct, setSelectedProduct] = useState('')
     
     useEffect(() => {
-        axios.get('/api/inventory/summary')
-            .then((res) => res.data)
-            .then((data) => {setData(data)})
-    }, [open])
+        axios.get('/api/inventory/products/')
+            .then((res) => {
+                setProducts(res.data)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    }, [])
+
+    useEffect(() => {
+        if (!selectedProduct) {
+            setData([])
+            return
+        }
+
+        axios.get('/api/inventory/summary/', {
+            params: {
+                product: selectedProduct
+            }
+        })
+            .then((res) => {setData(res.data)})
+            .catch((error) => {console.error(error)})
+    }, [selectedProduct, open])
 
     /** 非同期処理 **/
     const onChangeFileAsync = (newFile: any) => {
@@ -109,25 +130,53 @@ export default function Page() {
             </Box>
             
             <Box sx={{ m: 2 }}>
+                <Typography variant='subtitle1'>
+                    商品を選択
+                </Typography>
+
+                <Select
+                    value={selectedProduct}
+                    onChange={(e) => setSelectedProduct(e.target.value)}
+                    displayEmpty
+                    sx={{ minWidth: 300, mb: 2 }}
+                >
+                    <MenuItem value=''>
+                        商品を選択してください
+                    </MenuItem>
+
+                    {products.map((product) => (
+                        <MenuItem
+                            key={product.id}
+                            value={product.id}
+                        >
+                         {product.id}:{product.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+
                 <Typography variant='subtitle1'>年月ごとの売上数集計</Typography>
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>処理月</TableCell>
-                                <TableCell>合計数量</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.map((data: any) => (
-                                <TableRow key={data.monthly_date}>
-                                    <TableCell>{data.monthly_date}</TableCell>
-                                    <TableCell>{data.monthly_price}</TableCell>
+                
+                {selectedProduct && (
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>処理月</TableCell>
+                                    <TableCell>合計数量</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+
+                            <TableBody>
+                                {data.map((item: any) => (
+                                    <TableRow key={item.monthly_date}>
+                                        <TableCell>{item.monthly_date}</TableCell>
+                                        <TableCell>{item.monthly_price}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
             </Box>
             <Box sx={{ m: 2 }}>
                 <Typography variant='subtitle1'>非同期でファイル取込</Typography>

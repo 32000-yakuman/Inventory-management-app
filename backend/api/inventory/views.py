@@ -279,9 +279,27 @@ class SalesSyncView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
 class SalesList(ListAPIView):
-    queryset = Sales.objects.annotate(monthly_date=TruncMonth('sales_date')).values(
-        'monthly_date').annotate(monthly_price=Sum('quantity')).order_by('monthly_date')
     serializer_class = SalesSerializer
+
+    def get_queryset(self):
+        queryset = Sales.objects.all()
+
+        product_id = self.request.query_params.get('product')
+
+        if product_id:
+            queryset = queryset.filter(product_id=product_id)
+
+        return (
+            queryset
+            .annotate(
+                monthly_date=TruncMonth('sales_date')
+            )
+            .values('monthly_date')
+            .annotate(
+                monthly_price=Sum('quantity')
+            )
+            .order_by('monthly_date')
+        )
 
 # ログイン認証用API
 class MeView(APIView):
