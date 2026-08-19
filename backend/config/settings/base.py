@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-yg*!zwy=i-h0o5x932^p*rp*(v)-))h23xfla*g)_dhh+-cq2d")
+SECRET_KEY = os.environ.get["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,7 +91,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("MYSQL_DATABASE", "app_db"),
         "USER": os.environ.get("MYSQL_USER", "root"),
-        "PASSWORD": os.environ.get("MYSQL_PASSWORD", "hihuclub"),
+        "PASSWORD": os.environ.get["MYSQL_PASSWORD"],
         "HOST": "app-db",
         "PORT": "3306",
         "OPTIONS": {
